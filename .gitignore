@@ -1,0 +1,15 @@
+# Build outputs
+/build/
+/cmake-build-*/
+/.cache/
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Local data and generated results
+/data/generated/
+/benchmarks/results/
