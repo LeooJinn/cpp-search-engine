@@ -32,92 +32,119 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
   <title>C++ Search Engine</title>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #0f172a;
-      --panel: #111c31;
-      --panel-raised: #17243b;
-      --border: #2b3b56;
-      --text: #e7edf7;
-      --muted: #9aabc4;
-      --accent: #8cc8ff;
-      --accent-ink: #09213b;
-      --focus: #b8ddff;
-      --danger: #ffb4ab;
+      color-scheme: light;
+      --canvas: #f2efe8;
+      --paper: #fffdf8;
+      --paper-warm: #fbf7ef;
+      --ink: #20252d;
+      --muted: #74766f;
+      --faint: #a7a9a1;
+      --line: #d8d5cc;
+      --line-strong: #bcbab1;
+      --accent: #ee623f;
+      --accent-deep: #bc3f29;
+      --accent-soft: #fbe4dc;
+      --olive: #66734c;
+      --focus: #4d79a5;
+      --danger: #a63427;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; background: var(--bg); color: var(--text); font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif; }
-    main { max-width: 1120px; margin: 0 auto; padding: 42px 20px 64px; }
-    header { display: flex; align-items: end; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+    body { margin: 0; min-width: 320px; background: var(--canvas); color: var(--ink); font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { max-width: 1180px; margin: 0 auto; padding: 30px 24px 72px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 2px 24px; border-bottom: 1px solid var(--line-strong); }
+    .brand { display: flex; align-items: center; gap: 11px; font-size: .77rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .brand-mark { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 4px 4px 0 var(--olive); }
+    .header-status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .84rem; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--olive); }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: end; padding: 42px 2px 28px; }
     h1, h2, p { margin: 0; }
-    h1 { font-size: 1.8rem; line-height: 1.15; letter-spacing: -0.025em; }
-    h2 { font-size: 1.2rem; line-height: 1.25; overflow-wrap: anywhere; }
-    header p, .muted { color: var(--muted); }
-    .index-stat { color: var(--muted); font-size: .9rem; text-align: right; white-space: nowrap; }
-    .search-shell { margin: 28px 0 24px; }
-    form { display: flex; gap: 10px; }
-    input[type="search"] { flex: 1; min-width: 0; padding: 13px 14px; border: 1px solid var(--border); border-radius: 8px; outline: 0; background: var(--panel); color: var(--text); font: inherit; }
-    input[type="search"]:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgb(140 200 255 / 22%); }
-    button { border: 1px solid transparent; border-radius: 8px; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 750; cursor: pointer; }
-    button:hover { background: #b5ddff; }
-    button:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-    button:disabled { cursor: wait; opacity: .6; }
-    .submit { min-width: 104px; padding: 0 18px; }
-    .filters { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; color: var(--muted); font-size: .9rem; }
+    h1 { max-width: 650px; font-size: clamp(2.15rem, 5vw, 4.5rem); line-height: .98; letter-spacing: -.065em; font-weight: 800; }
+    .hero-copy { max-width: 430px; padding-bottom: 4px; color: var(--muted); font-size: 1rem; }
+    .hero-copy strong { color: var(--ink); font-weight: 700; }
+    .index-stat { display: grid; grid-template-columns: repeat(2, auto); gap: 10px 18px; padding: 14px 16px; border: 1px solid var(--line); background: var(--paper); font-size: .8rem; }
+    .stat-value { display: block; color: var(--ink); font-size: 1.2rem; font-weight: 800; letter-spacing: -.04em; }
+    .stat-label { display: block; color: var(--muted); }
+    .search-card { padding: 10px; border: 1px solid var(--ink); background: var(--ink); box-shadow: 8px 8px 0 var(--accent); }
+    form { display: flex; gap: 9px; }
+    input[type="search"] { flex: 1; min-width: 0; padding: 15px 16px; border: 0; border-radius: 2px; outline: 0; background: var(--paper); color: var(--ink); font: inherit; }
+    input[type="search"]::placeholder { color: var(--faint); }
+    input[type="search"]:focus { box-shadow: inset 0 0 0 3px #f3b4a2; }
+    button { border: 0; border-radius: 2px; font: inherit; font-weight: 750; cursor: pointer; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    button:disabled { cursor: wait; opacity: .62; }
+    .submit { min-width: 112px; padding: 0 20px; background: var(--accent); color: #fff9f4; }
+    .submit:hover { background: #f47859; }
+    .filters { display: flex; flex-wrap: wrap; gap: 18px; margin: 12px 2px 0; color: #c8c9c3; font-size: .82rem; }
     label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
-    input[type="checkbox"] { accent-color: var(--accent); }
-    #status { min-height: 1.5em; margin: 18px 0 12px; color: var(--muted); }
-    .workspace { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: 16px; align-items: start; }
-    .pane { min-width: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
-    .pane-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
-    .pane-heading span { color: var(--muted); font-size: .85rem; }
-    #results { display: grid; gap: 1px; overflow: hidden; border-radius: 0 0 10px 10px; }
-    .result { display: block; width: 100%; padding: 15px 16px; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; color: var(--text); text-align: left; }
+    input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); }
+    #status { min-height: 1.5em; margin: 32px 2px 12px; color: var(--muted); font-size: .9rem; }
+    .workspace { display: grid; grid-template-columns: minmax(0, .83fr) minmax(0, 1.17fr); gap: 18px; align-items: stretch; }
+    .pane { min-width: 0; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 14px 30px rgb(48 44 32 / 7%); }
+    .pane-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 18px 14px; border-bottom: 1px solid var(--line); }
+    .pane-heading strong { font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; }
+    .pane-heading span { color: var(--muted); font-size: .8rem; }
+    #results { overflow: hidden; }
+    .result { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; width: 100%; padding: 17px 18px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; }
     .result:last-child { border-bottom: 0; }
-    .result:hover, .result[aria-current="true"] { background: var(--panel-raised); }
-    .result-title { display: block; font-weight: 720; overflow-wrap: anywhere; }
-    .result-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 4px; color: var(--accent); font-size: .82rem; }
-    .result-preview { display: block; margin-top: 8px; color: var(--muted); font-size: .88rem; }
-    .empty { padding: 28px 16px; color: var(--muted); }
-    .detail { min-height: 330px; padding-bottom: 4px; }
-    .detail-body { padding: 18px 16px 20px; }
-    .detail-title { margin-bottom: 10px; }
-    .detail-source { margin-bottom: 16px; color: var(--muted); font-size: .86rem; overflow-wrap: anywhere; }
-    .detail-source code { color: var(--accent); font: inherit; }
-    .detail-source a { color: var(--accent); }
-    .detail-facts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 20px; color: var(--muted); font-size: .86rem; }
-    .detail-facts strong { color: var(--text); font-weight: 650; }
-    .query-callout { margin-bottom: 18px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--panel-raised); color: var(--muted); }
-    .query-callout strong { color: var(--text); font-weight: 650; }
-    .document-text { max-height: 470px; overflow: auto; padding: 14px; border: 1px solid var(--border); border-radius: 7px; background: #0b1324; color: #d6e1f1; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .result:hover { background: var(--paper-warm); }
+    .result[aria-current="true"] { background: var(--accent-soft); }
+    .result-number { color: var(--faint); font: 700 .78rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .result-title { display: block; overflow-wrap: anywhere; font-weight: 750; }
+    .result-meta { display: flex; flex-wrap: wrap; gap: 5px 12px; margin-top: 4px; color: var(--olive); font-size: .77rem; }
+    .result-preview { display: block; margin-top: 8px; color: var(--muted); font-size: .86rem; line-height: 1.45; }
+    .empty { padding: 34px 18px; color: var(--muted); }
+    .detail { min-height: 420px; }
+    .detail-body { padding: 24px 22px 26px; }
+    .detail-title { margin-bottom: 8px; font-size: 1.45rem; line-height: 1.15; letter-spacing: -.035em; overflow-wrap: anywhere; }
+    .detail-source { margin-bottom: 18px; color: var(--muted); font-size: .83rem; overflow-wrap: anywhere; }
+    .detail-source code, .detail-source a { color: var(--accent-deep); font: inherit; }
+    .detail-source a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .detail-facts { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 20px; color: var(--muted); font-size: .82rem; }
+    .detail-facts strong { color: var(--ink); font-weight: 750; }
+    .query-callout { margin-bottom: 18px; padding: 12px 14px; border: 1px solid #eac5b9; background: var(--accent-soft); color: var(--accent-deep); }
+    .query-callout strong { color: var(--ink); font-weight: 750; }
+    .text-label { margin-bottom: 7px; color: var(--muted); font-size: .76rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+    .document-text { max-height: 445px; overflow: auto; padding: 16px; border: 1px solid var(--line); background: #f8f6f0; color: #3f464d; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.72 ui-monospace, SFMono-Regular, Menlo, monospace; }
     .loading { color: var(--muted); }
     .error { color: var(--danger); }
-    @media (max-width: 760px) {
-      main { padding-top: 26px; }
-      header { align-items: start; flex-direction: column; }
-      .index-stat { text-align: left; }
+    @media (max-width: 820px) {
+      main { padding-top: 22px; }
+      .hero { grid-template-columns: 1fr; gap: 20px; padding-top: 32px; }
+      .index-stat { justify-self: start; }
       .workspace { grid-template-columns: 1fr; }
       .detail { min-height: 0; }
     }
     @media (max-width: 520px) {
+      main { padding-right: 16px; padding-left: 16px; }
+      header { align-items: start; flex-direction: column; }
       form { flex-direction: column; }
-      .submit { min-height: 44px; }
+      .submit { min-height: 48px; }
+      .search-card { box-shadow: 5px 5px 0 var(--accent); }
     }
   </style>
 </head>
 <body>
   <main>
     <header>
-      <div>
-        <h1>C++ Search Engine</h1>
-        <p>Search a persistent inverted index from your browser.</p>
-      </div>
-      <div class="index-stat" id="index-stat">Index ready</div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Index / Local Search</span></div>
+      <div class="header-status"><span class="status-dot" aria-hidden="true"></span><span>Running on localhost</span></div>
     </header>
 
-    <section class="search-shell" aria-label="Search controls">
+    <section class="hero">
+      <div>
+        <h1>Search your corpus.</h1>
+        <p class="hero-copy">A fast, inspectable index for <strong>plain text, PDFs, websites, and SQLite data.</strong></p>
+      </div>
+      <div class="index-stat" id="index-stat" aria-label="Index statistics">
+        <div><span class="stat-value" id="document-stat">—</span><span class="stat-label">documents</span></div>
+        <div><span class="stat-value" id="term-stat">—</span><span class="stat-label">terms</span></div>
+      </div>
+    </section>
+
+    <section class="search-card" aria-label="Search controls">
       <form id="search-form">
         <input id="query" type="search" placeholder="Try: systems programming" autocomplete="off" autofocus>
-        <button class="submit" id="submit" type="submit">Search</button>
+        <button class="submit" id="submit" type="submit">Search index</button>
       </form>
       <div class="filters">
         <label><input id="synonyms" type="checkbox"> expand synonyms</label>
@@ -132,7 +159,7 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
         <div id="results"><div class="empty">Matching documents will appear here.</div></div>
       </section>
       <section class="pane detail" aria-label="Document detail">
-        <div class="pane-heading"><strong>Document</strong><span>select a result</span></div>
+        <div class="pane-heading"><strong>Document</strong><span id="detail-state">select a result</span></div>
         <div class="detail-body" id="detail"><div class="empty">Select a result to inspect its source, matched query, and extracted text.</div></div>
       </section>
     </section>
@@ -145,11 +172,12 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
     const results = document.querySelector('#results');
     const resultCount = document.querySelector('#result-count');
     const detail = document.querySelector('#detail');
+    const detailState = document.querySelector('#detail-state');
     const submit = document.querySelector('#submit');
     const synonyms = document.querySelector('#synonyms');
     const fuzzy = document.querySelector('#fuzzy');
-    const indexStat = document.querySelector('#index-stat');
-    let latestResults = [];
+    const documentStat = document.querySelector('#document-stat');
+    const termStat = document.querySelector('#term-stat');
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -167,13 +195,11 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
         const response = await fetch('/api/search?' + params.toString());
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Search failed');
-        latestResults = data.results;
         renderResults(data.results);
         status.textContent = `Showing ${data.results.length} result${data.results.length === 1 ? '' : 's'} for “${value}”.`;
         if (data.results.length) selectResult(data.results[0], value);
         else showEmptyDetail();
       } catch (error) {
-        latestResults = [];
         renderResults([]);
         showError(error.message);
       } finally {
@@ -183,7 +209,7 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
 
     function setLoading(isLoading) {
       submit.disabled = isLoading;
-      submit.textContent = isLoading ? 'Searching…' : 'Search';
+      submit.textContent = isLoading ? 'Searching…' : 'Search index';
       if (isLoading) status.textContent = 'Searching the index…';
     }
 
@@ -197,25 +223,27 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
         results.append(empty);
         return;
       }
-      for (const item of items) {
+      items.forEach((item, index) => {
         const button = document.createElement('button');
         button.className = 'result';
         button.type = 'button';
         button.dataset.documentId = item.document_id;
         button.setAttribute('aria-label', `Open ${item.document_id}`);
-        button.innerHTML = '<span class="result-title"></span><span class="result-meta"></span><span class="result-preview"></span>';
+        button.innerHTML = '<span class="result-number"></span><span><span class="result-title"></span><span class="result-meta"></span><span class="result-preview"></span></span>';
+        button.querySelector('.result-number').textContent = String(index + 1).padStart(2, '0');
         button.querySelector('.result-title').textContent = item.document_id;
         button.querySelector('.result-meta').textContent = `score ${item.score} · ${item.characters.toLocaleString()} characters`;
         button.querySelector('.result-preview').textContent = item.preview || 'No preview available.';
         button.addEventListener('click', () => selectResult(item, queryInput.value.trim()));
         results.append(button);
-      }
+      });
     }
 
     async function selectResult(item, matchedQuery) {
       document.querySelectorAll('.result').forEach((button) => {
         button.setAttribute('aria-current', button.dataset.documentId === item.document_id ? 'true' : 'false');
       });
+      detailState.textContent = 'opening…';
       detail.innerHTML = '<div class="loading">Opening document…</div>';
       try {
         const params = new URLSearchParams({id: item.document_id, q: matchedQuery || ''});
@@ -224,12 +252,14 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
         if (!response.ok) throw new Error(data.error || 'Unable to open document');
         renderDetail(data, item.score);
       } catch (error) {
+        detailState.textContent = 'error';
         detail.innerHTML = '<div class="error"></div>';
         detail.querySelector('.error').textContent = error.message;
       }
     }
 
     function renderDetail(data, score) {
+      detailState.textContent = 'selected';
       detail.replaceChildren();
       const title = document.createElement('h2');
       title.className = 'detail-title';
@@ -238,7 +268,7 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
 
       const source = document.createElement('p');
       source.className = 'detail-source';
-      source.append('Source: ');
+      source.append('Source · ');
       if (/^https?:\/\//i.test(data.source)) {
         const link = document.createElement('a');
         link.href = data.source;
@@ -263,12 +293,16 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
 
       const queryCallout = document.createElement('div');
       queryCallout.className = 'query-callout';
-      queryCallout.append('Matched query: ');
+      queryCallout.append('Matched query · ');
       const queryValue = document.createElement('strong');
       queryValue.textContent = data.matched_query || '—';
       queryCallout.append(queryValue);
       detail.append(queryCallout);
 
+      const textLabel = document.createElement('div');
+      textLabel.className = 'text-label';
+      textLabel.textContent = 'Extracted text';
+      detail.append(textLabel);
       const text = document.createElement('pre');
       text.className = 'document-text';
       text.textContent = data.text || '[This document has no extracted text.]';
@@ -283,22 +317,29 @@ constexpr char kIndexHtml[] = R"html(<!doctype html>
     }
 
     function showEmptyDetail() {
+      detailState.textContent = 'no selection';
       detail.innerHTML = '<div class="empty">No document to open. Search again with a different query.</div>';
     }
 
     function showError(message) {
       status.textContent = message;
+      detailState.textContent = 'error';
       detail.innerHTML = '<div class="error"></div>';
       detail.querySelector('.error').textContent = message;
     }
 
     fetch('/api/info').then(response => response.json()).then(data => {
-      indexStat.textContent = `${data.documents.toLocaleString()} documents · ${data.terms.toLocaleString()} terms`;
-    }).catch(() => { indexStat.textContent = 'Index ready'; });
+      documentStat.textContent = data.documents.toLocaleString();
+      termStat.textContent = data.terms.toLocaleString();
+    }).catch(() => {
+      documentStat.textContent = '—';
+      termStat.textContent = '—';
+    });
   </script>
 </body>
 </html>
 )html";
+
 
 std::string url_decode(std::string_view value) {
     std::string decoded;

@@ -5,6 +5,14 @@ project(cpp_search_engine VERSION 0.1.0 LANGUAGES CXX)
 find_package(CURL REQUIRED)
 find_package(SQLite3 REQUIRED)
 
+if(TARGET SQLite3::SQLite3)
+    set(SEARCH_ENGINE_SQLITE_TARGET SQLite3::SQLite3)
+elseif(TARGET SQLite::SQLite3)
+    set(SEARCH_ENGINE_SQLITE_TARGET SQLite::SQLite3)
+else()
+    message(FATAL_ERROR "FindSQLite3 did not provide a known imported target")
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -29,7 +37,7 @@ target_include_directories(search_engine
 target_link_libraries(search_engine
     PRIVATE
         CURL::libcurl
-        SQLite3::SQLite3
+        ${SEARCH_ENGINE_SQLITE_TARGET}
 )
 
 target_compile_options(search_engine PRIVATE

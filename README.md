@@ -49,7 +49,7 @@ The project will compare a straightforward linear-scan implementation with an in
 ├── src/           # Production implementation
 ├── tests/         # Correctness and regression tests
 ├── benchmarks/    # Performance measurements
-├── data/          # Small local sample corpus only
+├── data/          # Small sample and evaluation corpora
 ├── docs/          # Design notes and benchmark results
 ├── semantic/      # Optional Python embedding-search experiment
 └── .github/       # Continuous integration workflow
@@ -160,7 +160,7 @@ python semantic/semantic_search.py query --index build/semantic.index --text "do
 
 This experiment is intentionally not required for the C++ build and does not claim that a small embedding model matches a production search service.
 
-See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/benchmark-latest.md`](docs/benchmark-latest.md) for the current multi-size report. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary. See [`semantic/README.md`](semantic/README.md) for the optional embedding experiment.
+See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/benchmark-latest.md`](docs/benchmark-latest.md) for the current multi-size report. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary. See [`docs/retrieval-evaluation.md`](docs/retrieval-evaluation.md) for the small qualitative comparison across retrieval modes. See [`semantic/README.md`](semantic/README.md) for the optional embedding experiment.
 
 ## Benchmark plan
 
@@ -175,4 +175,4 @@ Results will be reported with the dataset size, hardware, compiler, build flags,
 
 ## Project status
 
-Milestone 9 is complete: the project now has GitHub Actions CI, multi-size repeated benchmark reports with median and memory estimates, clickable browser results with document detail views, and an optional embedding-based semantic-search sidecar. The C++ core remains the canonical exact/fuzzy/synonym engine; semantic retrieval is isolated for honest comparison and reproducible model experiments.
+Milestone 10 is complete: the project now has a polished browser UI, cross-platform CMake target selection, a successfully executed optional semantic-search experiment, and a small qualitative evaluation comparing exact, synonym, fuzzy, and semantic retrieval. The next work should prioritize interview preparation and targeted improvements rather than adding more surface area.

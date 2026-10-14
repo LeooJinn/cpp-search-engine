@@ -1,0 +1,2 @@
+Plain text search basics
+This document explains exact keyword lookup in a small corpus.
