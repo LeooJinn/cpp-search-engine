@@ -4,6 +4,17 @@ A portfolio-grade document search engine built in C++17, focused on data structu
 
 The project will compare a straightforward linear-scan implementation with an indexed implementation, then explore parallel indexing and query processing. The goal is a small system that is easy to explain in a software-engineering interview and rigorous enough to benchmark.
 
+<p align="center">
+  <img src="docs/assets/search-ui-empty.jpg" alt="C++ Search Engine browser UI in its empty search state" width="49%" />
+  <img src="docs/assets/search-ui-result.jpg" alt="C++ Search Engine browser UI showing a selected search result and document text" width="49%" />
+</p>
+
+## Architecture
+
+The core path is intentionally inspectable: ingestion adapters produce `Document` values, the tokenizer normalizes them, sequential or parallel builders create postings, and the persistent index feeds the CLI and localhost browser UI.
+
+![C++ search engine architecture](docs/architecture/search-engine-architecture.svg)
+
 ## Goals
 
 - Parse a directory of plain-text documents.
