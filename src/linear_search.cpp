@@ -57,4 +57,14 @@ std::size_t LinearSearchEngine::document_count() const noexcept {
     return documents_.size();
 }
 
+std::size_t LinearSearchEngine::memory_estimate_bytes() const noexcept {
+    std::size_t estimate = documents_.capacity() * sizeof(Document);
+    for (const auto& document : documents_) {
+        estimate += document.id.capacity();
+        estimate += document.source.string().capacity();
+        estimate += document.text.capacity();
+    }
+    return estimate;
+}
+
 }  // namespace search_engine

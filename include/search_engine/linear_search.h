@@ -18,6 +18,8 @@ public:
 
     [[nodiscard]] std::size_t document_count() const noexcept;
 
+    [[nodiscard]] std::size_t memory_estimate_bytes() const noexcept;
+
 private:
     std::vector<Document> documents_;
 };

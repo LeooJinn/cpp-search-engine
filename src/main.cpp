@@ -4,9 +4,11 @@
 
 #include <exception>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace {
@@ -41,6 +43,44 @@ std::size_t parse_thread_count(const std::string& value) {
         throw std::invalid_argument("thread count must be a positive integer");
     }
     return static_cast<std::size_t>(thread_count);
+}
+
+std::string json_escape(std::string_view value) {
+    std::string escaped;
+    for (const unsigned char character : value) {
+        switch (character) {
+            case '\\': escaped += "\\\\"; break;
+            case '"': escaped += "\\\""; break;
+            case '\n': escaped += "\\n"; break;
+            case '\r': escaped += "\\r"; break;
+            case '\t': escaped += "\\t"; break;
+            default: escaped += static_cast<char>(character); break;
+        }
+    }
+    return escaped;
+}
+
+int export_documents(int argc, char* argv[]) {
+    if (argc != 4) {
+        std::cerr << "Usage: search_cli --export-documents <index-file> <jsonl-file>\n";
+        return 2;
+    }
+
+    const auto engine = search_engine::IndexedSearchEngine::load(argv[2]);
+    std::ofstream output(argv[3]);
+    if (!output) {
+        throw std::runtime_error("Unable to open document export: " + std::string(argv[3]));
+    }
+    for (const auto& document : engine.documents()) {
+        output << "{\"id\":\"" << json_escape(document.id)
+               << "\",\"source\":\"" << json_escape(document.source.string())
+               << "\",\"text\":\"" << json_escape(document.text) << "\"}\n";
+    }
+    if (!output) {
+        throw std::runtime_error("Unable to finish document export: " + std::string(argv[3]));
+    }
+    std::cout << "Exported " << engine.document_count() << " documents to " << argv[3] << '\n';
+    return 0;
 }
 
 int build_index(int argc, char* argv[]) {
@@ -124,7 +164,8 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage:\n"
                      "  search_cli [--engine linear|indexed] <document-directory> <query>\n"
                      "  search_cli --build-index <document-directory> <index-file> [--threads <count>]\n"
-                     "  search_cli --index <index-file> [--synonyms] [--fuzzy <distance>] <query>\n";
+                     "  search_cli --index <index-file> [--synonyms] [--fuzzy <distance>] <query>\n"
+                     "  search_cli --export-documents <index-file> <jsonl-file>\n";
         return 2;
     }
 
@@ -135,6 +176,9 @@ int main(int argc, char* argv[]) {
         }
         if (mode == "--index") {
             return search_saved_index(argc, argv);
+        }
+        if (mode == "--export-documents") {
+            return export_documents(argc, argv);
         }
 
         bool use_indexed = false;

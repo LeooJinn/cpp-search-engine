@@ -11,6 +11,7 @@
 .vscode/
 .idea/
 
-# Local data and generated results
-/data/generated/
-/benchmarks/results/
+# Python semantic-search experiment
+semantic/.venv-semantic/
+semantic/__pycache__/
+*.npz

@@ -294,6 +294,32 @@ std::size_t IndexedSearchEngine::indexed_term_count() const noexcept {
     return inverted_index_.size();
 }
 
+std::size_t IndexedSearchEngine::memory_estimate_bytes() const noexcept {
+    std::size_t estimate = documents_.capacity() * sizeof(Document);
+    for (const auto& document : documents_) {
+        estimate += document.id.capacity();
+        estimate += document.source.string().capacity();
+        estimate += document.text.capacity();
+    }
+    estimate += inverted_index_.size() * (sizeof(std::string) + sizeof(std::vector<Posting>));
+    for (const auto& [term, postings] : inverted_index_) {
+        estimate += term.capacity();
+        estimate += postings.capacity() * sizeof(Posting);
+    }
+    return estimate;
+}
+
+const Document* IndexedSearchEngine::find_document(std::string_view document_id) const noexcept {
+    const auto match = std::find_if(documents_.begin(), documents_.end(), [document_id](const auto& document) {
+        return document.id == document_id;
+    });
+    return match == documents_.end() ? nullptr : &*match;
+}
+
+const std::vector<Document>& IndexedSearchEngine::documents() const noexcept {
+    return documents_;
+}
+
 void IndexedSearchEngine::save(const std::filesystem::path& index_path) const {
     std::ofstream output(index_path, std::ios::binary | std::ios::trunc);
     if (!output) {

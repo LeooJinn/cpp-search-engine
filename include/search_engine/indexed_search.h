@@ -29,6 +29,12 @@ public:
 
     [[nodiscard]] std::size_t indexed_term_count() const noexcept;
 
+    [[nodiscard]] std::size_t memory_estimate_bytes() const noexcept;
+
+    [[nodiscard]] const Document* find_document(std::string_view document_id) const noexcept;
+
+    [[nodiscard]] const std::vector<Document>& documents() const noexcept;
+
     void save(const std::filesystem::path& index_path) const;
 
     [[nodiscard]] static IndexedSearchEngine load(const std::filesystem::path& index_path);

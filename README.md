@@ -34,6 +34,10 @@ The project will compare a straightforward linear-scan implementation with an in
 - [x] Add benchmarks and publish reproducible results.
 - [x] Add parallel indexing and compare it with the sequential version.
 - [x] Document tradeoffs, limitations, and future improvements.
+- [x] Add GitHub Actions build/test CI.
+- [x] Add multi-size benchmark reporting with repeated runs, medians, and memory estimates.
+- [x] Add clickable browser results with document detail views.
+- [x] Add an optional embedding-based semantic-search sidecar.
 
 ## Proposed layout
 
@@ -46,7 +50,9 @@ The project will compare a straightforward linear-scan implementation with an in
 ├── tests/         # Correctness and regression tests
 ├── benchmarks/    # Performance measurements
 ├── data/          # Small local sample corpus only
-└── docs/          # Design notes and benchmark results
+├── docs/          # Design notes and benchmark results
+├── semantic/      # Optional Python embedding-search experiment
+└── .github/       # Continuous integration workflow
 ```
 
 ## Build
@@ -82,6 +88,9 @@ Run either search implementation against the included sample corpus:
 # Reopen the saved index without rebuilding it.
 ./build/search_cli --index build/sample.index "search index"
 
+# Export documents for the optional semantic-search experiment.
+./build/search_cli --export-documents build/sample.index build/documents.jsonl
+
 # Use synonym expansion and tolerate one-edit spelling mistakes.
 ./build/search_cli --index build/sample.index --synonyms --fuzzy 1 "automobile repar"
 ```
@@ -98,7 +107,7 @@ Start the localhost-only browser interface with a persistent index:
 ./build/search_server build/sample.index 8080
 ```
 
-Open <http://127.0.0.1:8080>. The UI calls the local `/api/search` endpoint and supports exact search, configured synonym expansion, and one-edit spelling tolerance. The server binds only to loopback and returns at most 100 results per request.
+Open <http://127.0.0.1:8080>. The UI calls the local `/api/search` endpoint and supports exact search, configured synonym expansion, and one-edit spelling tolerance. Search results are buttons: selecting one opens an inline document detail view with the exact matched query, source path or URL, score, character/token counts, and extracted text. The server binds only to loopback and returns at most 100 results per request.
 
 The current query expansion is deliberately transparent lexical behavior, not neural semantic search. Synonyms come from a small checked-in dictionary and fuzzy matching uses bounded Levenshtein distance. A later optional experiment can add embedding-based retrieval without changing the core index format.
 
@@ -126,12 +135,32 @@ Run the reproducible synthetic benchmark in a Release build:
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
 cmake --build build --parallel
-./build/search_benchmark
+./build/search_benchmark --sizes 500,2000,8000 --runs 5 --query-repetitions 25 \\
+  --output docs/benchmark-latest.md
 ```
 
-The benchmark reports construction time, repeated-query time, and total matches for the linear, sequential-indexed, and parallel-indexed engines. It generates a deterministic 2,000-document corpus and repeats the same query 25 times; the match totals must agree before the benchmark exits successfully. Construction is expected to be more expensive for indexed engines because they do work up front, while repeated queries should be substantially cheaper. Parallel indexing partitions documents across workers, builds per-document term counts without shared writes, and merges postings in document order.
+The benchmark reports mean and median construction/query times across repeated runs, estimated memory usage, and match totals for multiple corpus sizes. It verifies that the linear, sequential-indexed, and parallel-indexed engines return the same matches before producing a report. `docs/benchmark-latest.md` is a generated snapshot; benchmark results are workload-specific and should not be presented as universal speed guarantees.
 
-See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary.
+## Continuous integration
+
+GitHub Actions builds and tests the project on Ubuntu and macOS for pushes and pull requests. CI also runs a small benchmark smoke test. The workflow is in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
+## Optional semantic search
+
+The C++ engine remains deterministic and dependency-light. The optional `semantic/` sidecar uses NumPy and Sentence Transformers to build a cosine-similarity embedding index, allowing a separate comparison between exact, fuzzy, synonym, and semantic retrieval:
+
+```bash
+python3 -m venv .venv-semantic
+source .venv-semantic/bin/activate
+python -m pip install -r semantic/requirements.txt
+./build/search_cli --export-documents build/sample.index build/documents.jsonl
+python semantic/semantic_search.py build --input build/documents.jsonl --output build/semantic.index
+python semantic/semantic_search.py query --index build/semantic.index --text "documents about search" --top-k 5
+```
+
+This experiment is intentionally not required for the C++ build and does not claim that a small embedding model matches a production search service.
+
+See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/benchmark-latest.md`](docs/benchmark-latest.md) for the current multi-size report. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary. See [`semantic/README.md`](semantic/README.md) for the optional embedding experiment.
 
 ## Benchmark plan
 
@@ -146,4 +175,4 @@ Results will be reported with the dataset size, hardware, compiler, build flags,
 
 ## Project status
 
-Milestone 8 is complete: the project now supports versioned persistent indexes, PDF/web/SQLite ingestion adapters, source-specific limits, fuzzy spelling tolerance, configured synonym expansion, and a localhost browser UI. The remaining advanced search experiment is optional embedding-based retrieval; the current query expansion is intentionally lexical and transparent rather than pretending to reproduce a modern neural search engine.
+Milestone 9 is complete: the project now has GitHub Actions CI, multi-size repeated benchmark reports with median and memory estimates, clickable browser results with document detail views, and an optional embedding-based semantic-search sidecar. The C++ core remains the canonical exact/fuzzy/synonym engine; semantic retrieval is isolated for honest comparison and reproducible model experiments.
