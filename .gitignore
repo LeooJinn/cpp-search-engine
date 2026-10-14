@@ -17,5 +17,6 @@
 # Python semantic-search experiment
 /.venv-semantic/
 semantic/.venv-semantic/
+semantic/__pycache__/
 tools/__pycache__/
 *.npz
