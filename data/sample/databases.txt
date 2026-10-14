@@ -1,0 +1,2 @@
+Databases store structured data and support reliable queries.
+A search index can make repeated queries faster.

@@ -26,13 +26,13 @@ The project will compare a straightforward linear-scan implementation with an in
 
 ## Milestones
 
-- [ ] Create the CMake project and command-line skeleton.
-- [ ] Add document loading and tokenization.
-- [ ] Implement a correct baseline linear-search engine.
-- [ ] Implement an inverted index and indexed queries.
-- [ ] Add unit tests for parsing, indexing, queries, and invalid input.
-- [ ] Add parallel indexing and compare it with the sequential version.
-- [ ] Add benchmarks and publish reproducible results.
+- [x] Create the CMake project and command-line skeleton.
+- [x] Add document loading and tokenization.
+- [x] Implement a correct baseline linear-search engine.
+- [x] Implement an inverted index and indexed queries.
+- [x] Add unit tests for parsing, indexing, queries, and invalid input.
+- [x] Add benchmarks and publish reproducible results.
+- [x] Add parallel indexing and compare it with the sequential version.
 - [ ] Document tradeoffs, limitations, and future improvements.
 
 ## Proposed layout
@@ -51,7 +51,42 @@ The project will compare a straightforward linear-scan implementation with an in
 
 ## Build
 
-Build instructions will be added with the first implementation milestone.
+Requirements:
+
+- CMake 3.20 or newer
+- A C++17 compiler
+
+Configure and build from the repository root:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+Run either search implementation against the included sample corpus:
+
+```bash
+# Linear baseline: scans and tokenizes every document for each query.
+./build/search_cli --engine linear data/sample "search index"
+
+# Indexed implementation: builds an inverted index, then looks up query terms.
+./build/search_cli --engine indexed data/sample "search index"
+```
+
+The engines use the same case-insensitive ASCII tokenization, require every query term to be present, and rank matches by the total frequency of the query terms in each document. The indexed implementation builds postings of the form `term -> document -> term frequency`, chooses the smallest posting list for candidates, and intersects the remaining posting lists with binary search.
+
+Run the reproducible synthetic benchmark in a Release build:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+cmake --build build --parallel
+./build/search_benchmark
+```
+
+The benchmark reports construction time, repeated-query time, and total matches for the linear, sequential-indexed, and parallel-indexed engines. It generates a deterministic 2,000-document corpus and repeats the same query 25 times; the match totals must agree before the benchmark exits successfully. Construction is expected to be more expensive for indexed engines because they do work up front, while repeated queries should be substantially cheaper. Parallel indexing partitions documents across workers, builds per-document term counts without shared writes, and merges postings in document order.
+
+See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats.
 
 ## Benchmark plan
 
@@ -66,4 +101,4 @@ Results will be reported with the dataset size, hardware, compiler, build flags,
 
 ## Project status
 
-Initial repository scaffold. Implementation begins with the parser, baseline search path, and test harness.
+Milestone 5 is complete: the project now has design and tradeoff documentation, a recorded benchmark run with environment details and caveats, and verified linear, sequential-indexed, and parallel-indexed implementations. Future improvements include larger workloads, memory measurement, persistent indexes, and richer ranking.
