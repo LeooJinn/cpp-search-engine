@@ -172,7 +172,7 @@ python semantic/semantic_search.py query --index build/semantic.index --text "do
 
 This experiment is intentionally not required for the C++ build and does not claim that a small embedding model matches a production search service.
 
-See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/benchmark-latest.md`](docs/benchmark-latest.md) for the current multi-size report. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary. See [`docs/real-corpus-benchmark.md`](docs/real-corpus-benchmark.md) for the Wikipedia sample download and realistic workload benchmark procedure.
+See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/benchmark-latest.md`](docs/benchmark-latest.md) for the current multi-size report. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary. See [`docs/real-corpus-benchmark.md`](docs/real-corpus-benchmark.md) for the Wikipedia sample download and realistic workload benchmark procedure. See [`docs/memory-optimization.md`](docs/memory-optimization.md) for the measured before/after memory optimization.
 
 ## Benchmark plan
 
@@ -187,4 +187,4 @@ Results will be reported with the dataset size, hardware, compiler, build flags,
 
 ## Project status
 
-Milestone 11 is complete: the project now includes a real-corpus benchmark run against 5,950 English Wikipedia articles (74.5 MB of text), measuring build/save/load times, query percentiles, index size, estimated memory, and peak RSS. The run showed parallel indexing at 496 ms versus 775 ms sequential, p50/p95 query latency of 0.005/0.028 ms, a 141 MB persistent index, and about 1.04 GB peak RSS. The memory result identifies the next optimization target: reducing the in-memory footprint before claiming larger-scale readiness.
+Milestone 12 is complete: the parallel indexer now reuses worker-local term maps instead of retaining one hash map per document. On the identical 5,950-article Wikipedia workload, peak RSS fell from 1.044 GB to 892 MB (14.6% lower), parallel build improved from 496 ms to 434 ms, and query p95 improved from 0.028 ms to 0.026 ms. The next memory target is separating document bodies from index metadata and loading text lazily for detail views.

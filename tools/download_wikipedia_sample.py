@@ -107,7 +107,8 @@ def main() -> None:
         "retrieved_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "source_api": API,
     }
-    (args.output / "_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    metadata_path = args.output.parent / f"{args.output.name}-metadata.json"
+    metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(metadata, indent=2))
 
 

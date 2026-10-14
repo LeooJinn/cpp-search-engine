@@ -13,7 +13,7 @@ python3 -I tools/download_wikipedia_sample.py \\
   --batch-size 100
 ```
 
-The downloader can be resumed after a public API rate limit. This run completed with 5,950 articles before the API rate-limited further requests; the exact corpus provenance is recorded in `data/corpora/wikipedia-5950/_metadata.json` locally.
+The downloader can be resumed after a public API rate limit. This run completed with 5,950 articles before the API rate-limited further requests; the exact corpus provenance is recorded in the local sibling metadata file `data/corpora/wikipedia-5950-metadata.json`. The metadata file is kept outside the corpus directory so it is not accidentally indexed as a document.
 
 ## Run it
 

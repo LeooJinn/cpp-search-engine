@@ -125,18 +125,26 @@ void IndexedSearchEngine::add_documents_parallel(std::vector<Document> documents
         throw std::invalid_argument("thread count must be greater than zero");
     }
 
+    const auto first_document_index = documents_.size();
     const std::size_t worker_count = std::min(thread_count, documents.size());
-    std::vector<std::unordered_map<std::string, std::size_t>> document_terms(documents.size());
+    using LocalIndex = std::unordered_map<std::string, std::vector<Posting>>;
+    std::vector<LocalIndex> worker_indexes(worker_count);
     std::vector<std::thread> workers;
     workers.reserve(worker_count);
 
     for (std::size_t worker = 0; worker < worker_count; ++worker) {
         const auto begin = (documents.size() * worker) / worker_count;
         const auto end = (documents.size() * (worker + 1)) / worker_count;
-        workers.emplace_back([&documents, &document_terms, begin, end]() {
+        workers.emplace_back([&documents, &worker_indexes, worker, begin, end, first_document_index]() {
+            auto& local_index = worker_indexes[worker];
+            std::unordered_map<std::string, std::size_t> term_counts;
             for (std::size_t index = begin; index < end; ++index) {
+                term_counts.clear();
                 for (const auto& term : tokenize(documents[index].text)) {
-                    ++document_terms[index][term];
+                    ++term_counts[term];
+                }
+                for (const auto& [term, count] : term_counts) {
+                    local_index[term].push_back({first_document_index + index, count});
                 }
             }
         });
@@ -146,16 +154,20 @@ void IndexedSearchEngine::add_documents_parallel(std::vector<Document> documents
         worker.join();
     }
 
-    const auto first_document_index = documents_.size();
     documents_.reserve(first_document_index + documents.size());
     for (auto& document : documents) {
         documents_.push_back(std::move(document));
     }
 
-    for (std::size_t index = 0; index < document_terms.size(); ++index) {
-        for (const auto& [term, count] : document_terms[index]) {
-            inverted_index_[term].push_back({first_document_index + index, count});
+    for (auto& local_index : worker_indexes) {
+        for (auto& [term, postings] : local_index) {
+            auto& destination = inverted_index_[term];
+            destination.insert(destination.end(),
+                               std::make_move_iterator(postings.begin()),
+                               std::make_move_iterator(postings.end()));
         }
+        local_index.clear();
+        local_index.rehash(0);
     }
 }
 
