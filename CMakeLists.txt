@@ -72,6 +72,13 @@ target_compile_options(search_benchmark PRIVATE
     $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall;-Wextra;-Wpedantic>
 )
 
+add_executable(search_real_benchmark benchmarks/real_corpus_benchmark.cpp)
+target_link_libraries(search_real_benchmark PRIVATE search_engine)
+
+target_compile_options(search_real_benchmark PRIVATE
+    $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall;-Wextra;-Wpedantic>
+)
+
 include(CTest)
 if(BUILD_TESTING)
     add_executable(search_engine_tests tests/search_engine_tests.cpp)

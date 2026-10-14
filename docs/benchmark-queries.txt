@@ -1,0 +1,12 @@
+# Fixed query workload for the Wikipedia corpus benchmark.
+computer science
+database systems
+distributed computing
+machine learning
+operating system
+network protocol
+quantum mechanics
+software engineering
+climate change
+astronomical object
+this query should not match any document xyzzy123

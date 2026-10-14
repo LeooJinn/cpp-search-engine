@@ -49,6 +49,7 @@ The core path is intentionally inspectable: ingestion adapters produce `Document
 - [x] Add multi-size benchmark reporting with repeated runs, medians, and memory estimates.
 - [x] Add clickable browser results with document detail views.
 - [x] Add an optional embedding-based semantic-search sidecar.
+- [x] Add a real-corpus benchmark against a 5,950-article Wikipedia sample.
 
 ## Proposed layout
 
@@ -171,7 +172,7 @@ python semantic/semantic_search.py query --index build/semantic.index --text "do
 
 This experiment is intentionally not required for the C++ build and does not claim that a small embedding model matches a production search service.
 
-See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/benchmark-latest.md`](docs/benchmark-latest.md) for the current multi-size report. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary. See [`docs/retrieval-evaluation.md`](docs/retrieval-evaluation.md) for the small qualitative comparison across retrieval modes. See [`semantic/README.md`](semantic/README.md) for the optional embedding experiment.
+See [`docs/design-and-tradeoffs.md`](docs/design-and-tradeoffs.md) for the data flow, indexing strategy, concurrency design, correctness approach, and limitations. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for a recorded benchmark run and its caveats. See [`docs/benchmark-latest.md`](docs/benchmark-latest.md) for the current multi-size report. See [`docs/content-ingestion.md`](docs/content-ingestion.md) for PDF, web, and SQLite ingestion details. See [`docs/query-features.md`](docs/query-features.md) for fuzzy matching, synonym expansion, and the semantic-search boundary. See [`docs/real-corpus-benchmark.md`](docs/real-corpus-benchmark.md) for the Wikipedia sample download and realistic workload benchmark procedure.
 
 ## Benchmark plan
 
@@ -186,4 +187,4 @@ Results will be reported with the dataset size, hardware, compiler, build flags,
 
 ## Project status
 
-Milestone 10 is complete: the project now has a polished browser UI, cross-platform CMake target selection, a successfully executed optional semantic-search experiment, and a small qualitative evaluation comparing exact, synonym, fuzzy, and semantic retrieval. The next work should prioritize interview preparation and targeted improvements rather than adding more surface area.
+Milestone 11 is complete: the project now includes a real-corpus benchmark run against 5,950 English Wikipedia articles (74.5 MB of text), measuring build/save/load times, query percentiles, index size, estimated memory, and peak RSS. The run showed parallel indexing at 496 ms versus 775 ms sequential, p50/p95 query latency of 0.005/0.028 ms, a 141 MB persistent index, and about 1.04 GB peak RSS. The memory result identifies the next optimization target: reducing the in-memory footprint before claiming larger-scale readiness.

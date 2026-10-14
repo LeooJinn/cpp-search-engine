@@ -11,6 +11,9 @@
 .vscode/
 .idea/
 
+# Downloaded benchmark corpora
+/data/corpora/
+
 # Python semantic-search experiment
 /.venv-semantic/
 semantic/.venv-semantic/
